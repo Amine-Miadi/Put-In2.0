@@ -1,20 +1,37 @@
-const express = require('express');
-const app = express();
-var server = require('http').createServer(app);
-const io = require("socket.io")(server, {
-    cors: {origin: "*"}
-});
+const gameState = require('./game_setup')
+const { Server } = require("socket.io");
+const { Player1 } = require('./game_setup');
+const io = new Server(3001, {cors: {origin: "*"}});
 
-app.get('/',(req,res) => {
-  res.send('<h1>hi</h1>')
-})
+const rooms = []
 
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
 
   //joining the room
   socket.on('join-room', roomCode => {
     console.log(socket.id, "joined room", roomCode)
+    const found = rooms.filter(room => room.code === roomCode)
+    var players = []
+    if(found.length===0){
+      const room = {
+        code: roomCode,
+        players: [socket.id]
+      }
+      rooms.push(room)
+      players=['Player1','Player2']
+    }else{
+      if(found[0].players.length === 1){
+        found[0].players.push(socket.id)
+        players=['Player2','Player1']
+      } 
+    }
     socket.join(roomCode)
+    console.log(players)
+    details = {
+      gameState: gameState,
+      players: players
+    }
+    socket.emit('init',details)
   })
 
 
@@ -25,12 +42,6 @@ io.on('connection', (socket) => {
     socket.to(room).emit('update', gameState)
   })
 
-  
-})
+});
 
-
-
-server.listen(3001, () =>{
-  console.log("server running on port 3001")
-})
 

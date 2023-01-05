@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Button from './components/Button';
 import Form from './components/roomFrom';
+import Card from './components/Card';
 import socket from './socket'
 
 
@@ -8,57 +9,63 @@ import socket from './socket'
 
 function App() {
 
-
+  const [Players, setPlayer] = useState(['Player2', 'Player1'])
   const [roomCode, setroomCode] = useState('')
   const [currentPage, setPage] = useState('roomJoin')
-  const [gameState, setGamestate] = useState(
-    {
-      Player1: ["1","2","3","4"],
-      Player2: ["6","7","8","9"],
-      Deck: ["A","K","Q","J"],
-      Field: 10
-    }
-  )
+  const [gameState, setGamestate] = useState({
+    Player1:["?","?","?","?"],
+    Player2:["?","?","?","?"],
+    Field: "?",
+    Deck:["?","?","?","?"]
+  })
+  const [hand, setHand] = useState('')
+
 
   
+  socket.on('init', async details => {
+    console.log(details)
+    setPlayer(details.players)
+    setGamestate(details.gameState)
+    console.log(details.gameState)
+  })
 
-
-  socket.on('update', newState => {
-    console.log("received at: ", socket.id)
-    setGamestate(newState)
+  socket.on('update', async newState => {
+    await setGamestate(newState)
+    console.log(newState)
   })
 
 
 
 //event handlers
 
-
-//to refactor later: set new state to object variable and pass it instead of elaborate object
+  /* play hand button handler */
   function handleclick(){
-    setGamestate({
-      Player1: ["1","2","3","4"],
-      Player2: ["6","7","8","9"],
-      Deck: ["A","K","Q","J"],
-      Field: gameState.Field+1
-    })
-    socket.emit('play-hand',  roomCode, {
-      Player1: ["1","2","3","4"],
-      Player2: ["6","7","8","9"],
-      Deck: ["A","K","Q","J"],
-      Field: gameState.Field+1
-    })
+    setGamestate(gameState)
+    socket.emit('play-hand',  roomCode, gameState)
   }
 
+  /* event handler for roomcode field */
   function inputChange(event){
     event.preventDefault();
     setroomCode(event.target.value)
   }
 
+  /* event handler for successful room join */
   function handleSubmit(event){
     event.preventDefault();
     socket.emit('join-room',roomCode)
     setPage('gamePage')
   }
+
+  /*add card to hand if player clicks on it*/
+  function addTohand(card){
+    setHand(current => [...current, card])
+    console.log(hand)
+  }
+
+
+
+  //render based on gamePage state, whether welcome page or game page
   if(currentPage === 'roomJoin'){
     return (
       <div>
@@ -73,12 +80,13 @@ function App() {
   else if(currentPage === 'gamePage'){
     return (
       <div>
+        {console.log(gameState,"this is gamestate")}
         Welcome to the game <br /><br /><br />
-        {gameState.Player1}<br /><br />
-        {gameState.Field}<br /><br />
-        {gameState.Player2}<br /><br />
+        {gameState[Players[1]].map(card => <Card properties = {card} action={addTohand} />)}<br /><br />
+        <Card properties = {gameState.Field}/><br /><br />
+        {gameState[Players[0]].map(card => <Card properties = {card}/>)}<br /><br /><br /><br />
         <br /><br /><br />
-        <Button handleclick={handleclick}/> <br />
+        <Button handleclick={handleclick} label={'play hand'}/> <br />
       </div>
     );
   }
