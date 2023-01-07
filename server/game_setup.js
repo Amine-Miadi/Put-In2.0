@@ -4,15 +4,18 @@ const GAME_STATE = {
         Player1: [],
         Player2: [],
         Deck: [],
-        Field: null
+        Field: []
     }
 
+function getGameState(){
+  let freshDeck = NewDeck()
+  GAME_STATE.Player1 = freshDeck.slice(0,4)
+  GAME_STATE.Player2 = freshDeck.slice(4,8)
+  GAME_STATE.Field = [freshDeck[8]]
+  GAME_STATE.Deck = freshDeck.slice(9,56)
+  return GAME_STATE
+}
 
-let freshDeck = NewDeck()
-GAME_STATE.Player1 = freshDeck.slice(0,4)
-GAME_STATE.Player2 = freshDeck.slice(4,8)
-GAME_STATE.Field = freshDeck[8]
-GAME_STATE.Deck = freshDeck.slice(9,56)
 
 
 function NewDeck(){
@@ -35,4 +38,4 @@ function shuffle(cards){
     return shuffled
 }
 
-module.exports = GAME_STATE
+module.exports = getGameState

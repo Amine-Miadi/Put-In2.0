@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import addTohand from '../playFunctions/playing' 
+
 const cardFaceupStyle = {
     borderRadius: "0.5rem",
     height: "150px",
@@ -22,7 +22,7 @@ const Card = (props) =>{
 
     function cardClick(){
         setFlipped("up")
-        addTohand(properties)
+        props.action(properties)
     }
 
     return(
