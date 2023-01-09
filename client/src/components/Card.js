@@ -1,36 +1,27 @@
 import {useState} from 'react';
-
-const cardFaceupStyle = {
-    borderRadius: "0.5rem",
-    height: "150px",
-    width: "105px",
-    marginLeft: "0.25rem",
-    transition: "0.3s"
-};
-const cardFacedownStyle = {
-    borderRadius: "0.5rem",
-    height: "150px",
-    width: "105px",
-    marginLeft: "0.25rem",
-    backgroundColor: "Blue",
-    transition: "0.3s"
-};
+import '../styles/styles.css'
 
 const Card = (props) =>{
-    const [isFlipped, setFlipped] = useState("down");
+    console.log("render")
     const properties = props.properties
+    const [Class, setclass] = useState( props.type === "player" || props.type === "opponent" ? "card facedown" : "card faceup");
+    const [cardInfo, setInfo] = useState(props.type === "player" || props.type === "opponent" ? "" : `${properties.suit}`);
 
     function cardClick(){
-        setFlipped("up")
-        props.action(properties)
+        if(props.type === "player"){
+            setclass("card faceup")
+            setInfo(`${properties.suit}`)
+            props.action(properties)
+        }
     }
 
     return(
         <button 
-                style={isFlipped === "down" ? cardFaceupStyle : cardFacedownStyle} 
-                onClick = {cardClick} 
+                className={Class}
+                onClick = {cardClick}
+                data-value = {`${properties.suit}   ${properties.value}`}
         > 
-            {`${properties.suit},${properties.value}`}
+            {cardInfo}
         </button>
     )
 }

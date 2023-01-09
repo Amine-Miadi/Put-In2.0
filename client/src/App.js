@@ -4,6 +4,7 @@ import Form from './components/roomFrom';
 import Card from './components/Card';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
+import './styles/styles.css'
 
 
 
@@ -24,7 +25,6 @@ function App() {
 
 
 socket.off('init').on('init', details => {
-  console.log("initiated")
   if(details === -1){
     setroomCode('')
     setWarning(true)
@@ -83,13 +83,12 @@ function hez(newState){
 }
 
 function playHand(){
-  console.log(hand)
   const newState = gameState
   newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
   hand.map(card => newState.Field.push(card))
   setGamestate(newState)
-  console.log(gameState)
   setHand([])
+  console.log(gameState)
 }
 
 
@@ -113,11 +112,23 @@ function playHand(){
   }
   else if(currentPage === 'gamePage'){
     return (
-      <div>
-        Welcome to the game <br /><br /><br />
-        {gameState[Players[1]].map(card => <Card properties = {card} action={addTohand} />)}<br /><br />
-        <Card properties = {gameState.Field[gameState.Field.length - 1]}/><br /><br />
-        {gameState[Players[0]].map(card => <Card properties = {card} action={addTohand} />)}<br /><br /><br /><br />
+      <div className='main'>
+        <div className='cards'>{gameState[Players[1]].map(card => <Card 
+                                                                      properties = {card} 
+                                                                      action={addTohand} 
+                                                                      type = {"opponent"}
+                                                                  />)}
+
+        </div><br /><br />
+
+        <Card properties = {gameState.Field[gameState.Field.length - 1]} type = {"field"} /><br /><br />
+
+        <div className='cards'>{gameState[Players[0]].map(card => <Card 
+                                                                      properties = {card} 
+                                                                      action={addTohand} 
+                                                                      type = {"player"}
+                                                                  />)}
+        </div><br /><br />
         <br /><br /><br />
         <Button handleclick={handleclick} label={'play hand'}/> <br />
       </div>

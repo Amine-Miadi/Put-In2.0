@@ -1,6 +1,8 @@
+import '../styles/styles.css'
+
 const Button = (props) =>{
     return(
-      <button onClick = {props.handleclick} > {props.label}</button>
+      <button className = "button" onClick = {props.handleclick} > {props.label}</button>
     )
 }
 
