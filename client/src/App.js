@@ -10,6 +10,7 @@ import './styles/styles.css'
 
 
 function App() {
+  const [play,setPlay] = useState(null)
   const [cardKey, setKey] = useState(0)
   const [warn, setWarning] = useState(false)
   const [Players, setPlayer] = useState(['Player1', 'Player2'])
@@ -36,12 +37,26 @@ socket.off('init').on('init', details => {
     setPlayer(details.players)
     hez(details.gameState)
     setPage('gamePage')
+    if(details.players[0] === "Player1"){
+      setPlay(true)
+    }
   }
 })
 
 socket.off('update').on('update', newState => {
   hez(newState)
   setKey(cardKey+1)
+  setPlay(true)
+})
+
+socket.off('win').on('win', (player,newgameState) =>{
+  setKey(cardKey +1)
+  if(Players[0] === "Player1"){
+    hez(newgameState)
+    setPlay(true)
+  }
+  setGamestate(newgameState)
+  alert(`${player} won the game`)
 })
   
 
@@ -52,9 +67,13 @@ socket.off('update').on('update', newState => {
 
   /* play hand button handler */
   function handleclick(){
-    setGamestate(gameState)
-    playHand()
-    socket.emit('play-hand',  roomCode, gameState)
+    console.log(play)
+    if(play === true){
+      setGamestate(gameState)
+      playHand()
+      setPlay(false)
+      socket.emit('play-hand',  roomCode, gameState)
+    }
   }
 
   /* event handler for roomcode field */
@@ -114,21 +133,20 @@ function playHand(){
   else if(currentPage === 'gamePage'){
     return (
       <div className='main'>
-        <div className='cards'>{gameState[Players[1]].map(() =>         <button 
-                                                                              className='card facedown'>
-                                                                        </button>)}
+      <div className='cards'>{gameState[Players[1]].map(() =>         <button 
+                                                                            className='card facedown'>
+                                                                      </button>)}
 
         </div><br /><br />
 
         <Card properties = {gameState.Field[gameState.Field.length - 1]} type = {"field"} key={cardKey}/><br /><br />
 
         <div className='cards'>{gameState[Players[0]].map((card, i) => {
-                                                                        console.log(cardKey+i)
                                                                 return <Card
+                                                                            play = {play}
                                                                             type = {"player"}
                                                                             action = {addTohand}
                                                                             properties={card}
-                                                                            Id={cardKey+i}
                                                                             key={cardKey+i}
                                                                         />
                                                                         })}

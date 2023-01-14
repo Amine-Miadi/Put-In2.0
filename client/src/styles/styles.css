@@ -71,6 +71,14 @@
     transform: rotate(180deg);
   }
   /*--------------------------------------------------------*/
+
+  /* .red{
+    color: red
+  }
+
+  .black{
+    color: black
+  } */
   
   button{
     border-radius: 4px;
@@ -87,10 +95,4 @@
     position: absolute;
     left: 100px;
     bottom: 85%;
-  }
-  
-  button:hover{
-    -ms-transform: scale(1.15);
-    -webkit-transform: scale(1.15); 
-    transform: scale(1.15); 
   }
