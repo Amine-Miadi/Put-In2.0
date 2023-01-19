@@ -1,15 +1,20 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import Button from './components/Button';
 import Form from './components/roomFrom';
 import Card from './components/Card';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
 import './styles/styles.css'
-
+const rules = require('./rules')
 
 
 
 function App() {
+  //-->play is to control clickability of cards, when it's not the players turn, cards should not respond to clicks
+  //-->cardKey used to set the key of cards so they are recreated on render. was added to mitigate the problem of 
+        //card components holding their class properties on parent render
+  const playCode = useRef(-100);
+  const keepTurn = useRef(false);
   const [play,setPlay] = useState(null)
   const [cardKey, setKey] = useState(0)
   const [warn, setWarning] = useState(false)
@@ -67,12 +72,17 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   /* play hand button handler */
   function handleclick(){
-    console.log(play)
     if(play === true){
+      console.log(keepTurn.current)
       setGamestate(gameState)
       playHand()
-      setPlay(false)
-      socket.emit('play-hand',  roomCode, gameState)
+      if(keepTurn.current === false){
+        setPlay(false)
+        socket.emit('play-hand', roomCode, gameState)
+      }
+      //reset play status (can no longer keep playing)
+      playCode.current = -111
+      keepTurn.current = false
     }
   }
 
@@ -103,33 +113,41 @@ function hez(newState){
 }
 
 function playHand(){
-  setKey(cardKey +1+gameState[Players[0]].length)
-  const newState = gameState
-  newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
-  hand.map(card => newState.Field.push(card))
-  setGamestate(newState)
-  setHand([])
+  let verdict = rules.verify(hand,gameState,Players[0])
+  console.log(verdict)
+  if(verdict === -1){
+    setKey(cardKey +1+gameState[Players[0]].length)
+    setHand([])
+  }
+  else if(verdict === 2 || verdict === 1){
+    if(verdict === 2){
+      playCode.current = 2
+      keepTurn.current = true
+    }
+    setKey(cardKey +1+gameState[Players[0]].length)
+    const newState = gameState
+    newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
+    hand.map(card => newState.Field.push(card))
+    setGamestate(newState)
+    setHand([])
+  }
 }
 
 
 
-
-
-
-
-  //render based on gamePage state, whether welcome page or game page
-  if(currentPage === 'roomJoin'){
-    return (
-      <div>
-        <Form 
-          roomCode={roomCode}
-          handleSubmit={handleSubmit}
-          inputChange={inputChange}
-        />
-        <Warning on={warn} />
-      </div>
-    );
-  }
+//render based on gamePage state, whether welcome page or game page
+if(currentPage === 'roomJoin'){
+  return (
+    <div>
+      <Form 
+        roomCode={roomCode}
+        handleSubmit={handleSubmit}
+        inputChange={inputChange}
+      />
+      <Warning on={warn} />
+    </div>
+  );
+}
   else if(currentPage === 'gamePage'){
     return (
       <div className='main'>
@@ -139,15 +157,17 @@ function playHand(){
 
         </div><br /><br />
 
-        <Card properties = {gameState.Field[gameState.Field.length - 1]} type = {"field"} key={cardKey}/><br /><br />
+        <Card properties = {gameState.Field[gameState.Field.length - 1]} type = {"field"} key={cardKey} iD={cardKey}/><br /><br />
 
         <div className='cards'>{gameState[Players[0]].map((card, i) => {
                                                                 return <Card
                                                                             play = {play}
-                                                                            type = {"player"}
+                                                                            type = {"Player"}
                                                                             action = {addTohand}
                                                                             properties={card}
-                                                                            key={cardKey+i}
+                                                                            key={cardKey+i+1}
+                                                                            iD={cardKey+i+1}
+                                                                            last={i+1===gameState[Players[0]].length ? true : false}
                                                                         />
                                                                         })}
         </div><br /><br />

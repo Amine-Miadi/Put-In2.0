@@ -14,6 +14,7 @@ io.on("connection", (socket) => {
 
   //sending info to room all while checking if game is won
   socket.on('play-hand', (room, gameState) => {
+    console.log("got play hand")
     const result = isWin(gameState)
     if(result !==null){
       console.log(result, " won the game")
