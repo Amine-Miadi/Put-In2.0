@@ -2,6 +2,7 @@ import React, {useState, useRef} from 'react';
 import Button from './components/Button';
 import Form from './components/roomFrom';
 import Card from './components/Card';
+import OpCard from './components/opCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
 import './styles/styles.css'
@@ -13,8 +14,10 @@ function App() {
   //-->play is to control clickability of cards, when it's not the players turn, cards should not respond to clicks
   //-->cardKey used to set the key of cards so they are recreated on render. was added to mitigate the problem of 
         //card components holding their class properties on parent render
+  //to stop player from flipping more cards when a 7 is played
   const playCode = useRef(-100);
   const keepTurn = useRef(false);
+  const action = useRef(addTohand);
   const [play,setPlay] = useState(null)
   const [cardKey, setKey] = useState(0)
   const [warn, setWarning] = useState(false)
@@ -50,12 +53,13 @@ socket.off('init').on('init', details => {
 
 socket.off('update').on('update', newState => {
   hez(newState)
-  setKey(cardKey+1)
+  setKey(cardKey +1+gameState[Players[0]].length)
   setPlay(true)
+  console.log("received at ",Players[0])
 })
 
 socket.off('win').on('win', (player,newgameState) =>{
-  setKey(cardKey +1)
+  setKey(cardKey +1+gameState[Players[0]].length)
   if(Players[0] === "Player1"){
     hez(newgameState)
     setPlay(true)
@@ -73,15 +77,14 @@ socket.off('win').on('win', (player,newgameState) =>{
   /* play hand button handler */
   function handleclick(){
     if(play === true){
-      console.log(keepTurn.current)
       setGamestate(gameState)
       playHand()
       if(keepTurn.current === false){
+        setKey(cardKey +1+gameState[Players[0]].length)
         setPlay(false)
         socket.emit('play-hand', roomCode, gameState)
       }
       //reset play status (can no longer keep playing)
-      playCode.current = -111
       keepTurn.current = false
     }
   }
@@ -103,6 +106,13 @@ socket.off('win').on('win', (player,newgameState) =>{
     setHand(current => [...current, card])
   }
 
+  function stopFlippage(){
+    playCode.current = 0
+    action.current = addTohand
+    setHand([])
+  }
+
+
 
 
 
@@ -113,25 +123,48 @@ function hez(newState){
 }
 
 function playHand(){
+  setKey(cardKey +1+gameState[Players[0]].length)
   let verdict = rules.verify(hand,gameState,Players[0])
-  console.log(verdict)
   if(verdict === -1){
-    setKey(cardKey +1+gameState[Players[0]].length)
     setHand([])
   }
-  else if(verdict === 2 || verdict === 1){
     if(verdict === 2){
       playCode.current = 2
       keepTurn.current = true
+      const newState = gameState
+      newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
+      setGamestate(newState)
+      setHand([])
     }
-    setKey(cardKey +1+gameState[Players[0]].length)
+    if(verdict === 7){
+      playCode.current = 7
+      action.current = stopFlippage
+      const newState = gameState
+      newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
+      hand.map(card => newState.Field.push(card))
+      setGamestate(newState)
+      setHand([])
+    }
+    if(verdict === 10){
+      action.current = stopFlippage
+      playCode.current = 10
+      const newState = gameState
+      newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
+      hand.map(card => newState.Field.push(card))
+      setGamestate(newState)
+      setHand([])
+    }
+    if(verdict === 1){
+    playCode.current = 1
     const newState = gameState
     newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
     hand.map(card => newState.Field.push(card))
     setGamestate(newState)
     setHand([])
-  }
+    }
 }
+
+
 
 
 
@@ -151,9 +184,12 @@ if(currentPage === 'roomJoin'){
   else if(currentPage === 'gamePage'){
     return (
       <div className='main'>
-      <div className='cards'>{gameState[Players[1]].map(() =>         <button 
-                                                                            className='card facedown'>
-                                                                      </button>)}
+      {gameState.Deck.length}
+      <div className='cards'>{gameState[Players[1]].map((card,i) =><OpCard
+                                                                        properties={card}
+                                                                        action = {action.current}
+                                                                        playType={playCode.current}
+                                                                    />)}
 
         </div><br /><br />
 
@@ -163,10 +199,11 @@ if(currentPage === 'roomJoin'){
                                                                 return <Card
                                                                             play = {play}
                                                                             type = {"Player"}
-                                                                            action = {addTohand}
+                                                                            action = {action.current}
                                                                             properties={card}
                                                                             key={cardKey+i+1}
                                                                             iD={cardKey+i+1}
+                                                                            playType={playCode.current}
                                                                             last={i+1===gameState[Players[0]].length ? true : false}
                                                                         />
                                                                         })}

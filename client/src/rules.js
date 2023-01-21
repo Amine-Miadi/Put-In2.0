@@ -14,6 +14,9 @@ function verify(hand,gameState,player){
         else if(hand[0].value === "7"){
             return 7
         }
+        else if(hand[0].value === "10"){
+            return 10
+        }
         else {
             return 1
         }
@@ -22,7 +25,12 @@ function verify(hand,gameState,player){
         for(let i=0;i<hand.length;i++){
             if(hand[i].value !== hand[0].value){return -1}
         }
-        return 1
+        if(hand[0].value === 7) {return 7}
+        if(hand[0].value === 10) {return 10}
+        else {
+            console.log("the card value")
+            return 1
+        }
     }
 }
 

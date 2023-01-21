@@ -10,11 +10,21 @@ const Card = (props) =>{
     const [cardInfo, setInfo] = useState(() => props.type === "field" ? `${properties.suit}` : "" );
 
     function cardClick(){
+        console.log(props.play,props.playType,props.type)
+        if(props.type === "Player" && props.playType === 7){
+            setclass("card Player faceup")
+            setInfo(`${properties.suit}`)
+            setTimeout(() => {
+                setclass("card facedown Player")
+                setInfo(``)
+            }, 3000)
+            props.action()
+        }
         if(props.type === "Player" && props.play === true){
             setclass("card faceup")
             setInfo(`${properties.suit}`)
             props.action(properties)
-         }
+        }
     }
 
     function getColor(){
@@ -34,7 +44,7 @@ const Card = (props) =>{
             }, 5000)
         }
         //flip the picked up card
-        if(props.last && props.play === true && seen.current === false){
+        if(props.last && props.play === true && seen.current === false && props.playType !== 2){
             seen.current = true
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)
