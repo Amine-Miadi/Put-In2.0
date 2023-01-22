@@ -1,4 +1,4 @@
-function verify(hand,gameState,player){
+function verify(hand,gameState){
     //coding: 
     // -1 error, 
     // 1 multiple/one valid cards, 
@@ -9,6 +9,9 @@ function verify(hand,gameState,player){
 
     if(hand.length === 1){
         if(hand[0].value === gameState.Field[gameState.Field.length -1].value){
+            if(hand[0].value === 7) {return 7}
+            if(hand[0].value === 10) {return 10}
+            if(hand[0].value === 11) {return 11}
             return 2
         }
         else if(hand[0].value === "7"){
@@ -32,7 +35,6 @@ function verify(hand,gameState,player){
         if(hand[0].value === 10) {return 10}
         if(hand[0].value === 11) {return 11}
         else {
-            console.log(hand[0].value)
             return 1
         }
     }

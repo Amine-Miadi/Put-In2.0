@@ -54,10 +54,11 @@ socket.off('init').on('init', details => {
 })
 
 socket.off('update').on('update', newState => {
+  playCode.current = 0
+  action.current = addTohand
   hez(newState)
   setKey(cardKey +1+gameState[Players[0]].length)
   setPlay(true)
-  console.log("received at ",Players[0],play)
 })
 
 socket.off('win').on('win', (player,newgameState) =>{
@@ -78,13 +79,12 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   /* play hand button handler */
   function handleclick(){
-    console.log("onclick info: ", play,playCode,keepTurn,gameState)
+    console.log("onclick info: ", play,playCode,keepTurn,gameState,action.current)
     setKey(cardKey +1+gameState[Players[0]].length)
     if(play === true){
       setGamestate(gameState)
       playHand()
       if(keepTurn.current === false){
-        console.log("play provilege terminated at: ",playCode)
         setKey(cardKey +1+gameState[Players[0]].length)
         setPlay(false)
         socket.emit('play-hand', roomCode, gameState)
@@ -109,6 +109,7 @@ socket.off('win').on('win', (player,newgameState) =>{
   /*add card to hand if player clicks on it*/
   function addTohand(card){
     setHand(current => [...current, card])
+    console.log("added to hand")
   }
 
   function stopFlippage(){
@@ -119,7 +120,6 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   function swapFunction(card){
     if(playCode.current === 11){
-      console.log(gameState)
       playCode.current = 11.5
       swapArray.current.push(card)
       setHand([])
@@ -127,7 +127,6 @@ socket.off('win').on('win', (player,newgameState) =>{
     else if(playCode.current === 11.5){
       newState.current = gameState 
       swapArray.current.push(card)
-      console.log("current swaparray: ",swapArray.current)
       newState.current[Players[0]] = newState.current[Players[0]].filter(card => !swapArray.current.includes(card));
       newState.current[Players[1]] = newState.current[Players[1]].filter(card => !swapArray.current.includes(card));
       newState.current[Players[0]].push(swapArray.current[1])
@@ -135,7 +134,6 @@ socket.off('win').on('win', (player,newgameState) =>{
       setGamestate(newState.current)
       newState.current = null
       swapArray.current = []
-      playCode.current = 0
       action.current = addTohand
       setHand([])
     }
@@ -145,6 +143,7 @@ socket.off('win').on('win', (player,newgameState) =>{
 
 //gameplay-functions
 function hez(newState){
+    playCode.current = 0
     newState[Players[0]].push(newState.Deck.pop())
     setGamestate(newState)
 }
