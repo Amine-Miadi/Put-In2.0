@@ -8,9 +8,8 @@ const OpCard = (props) =>{
     const [cardInfo, setInfo] = useState(``);
 
     function cardClick(){
-        console.log(props.playType)
+        console.log("clicked on opponent card and found playtype: ",props.playType)
         if(props.playType === 10){
-            console.log("10 detected")
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)
             setTimeout(() => {
@@ -18,6 +17,10 @@ const OpCard = (props) =>{
                 setInfo(``)
             }, 3000)
             props.action()
+        }
+        if(props.playType === 11.5){
+            console.log("opponent card sent: ",properties," at code ", props.playType)
+            props.action(properties)
         }
     }
 

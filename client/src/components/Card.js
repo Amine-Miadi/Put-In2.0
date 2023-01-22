@@ -10,8 +10,8 @@ const Card = (props) =>{
     const [cardInfo, setInfo] = useState(() => props.type === "field" ? `${properties.suit}` : "" );
 
     function cardClick(){
-        console.log(props.play,props.playType,props.type)
-        if(props.type === "Player" && props.playType === 7){
+        console.log("flipped, idk why ",props.playType)
+        if(props.type === "Player" && props.playType === 7 && props.playType !== 11 && props.playType !== 11.5){
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)
             setTimeout(() => {
@@ -20,9 +20,12 @@ const Card = (props) =>{
             }, 3000)
             props.action()
         }
-        if(props.type === "Player" && props.play === true){
+        if(props.type === "Player" && props.play === true && props.playType !== 11 && props.playType !== 11.5){
             setclass("card faceup")
             setInfo(`${properties.suit}`)
+            props.action(properties)
+        }
+        if(props.playType === 11){
             props.action(properties)
         }
     }
@@ -34,7 +37,7 @@ const Card = (props) =>{
     
     useEffect(()=>{
         //flip two cards at the start of the game
-        if((id.current === 1 || id.current === 2) && props.type !== "field"){
+        if((id.current === 1 || id.current === 2) && props.type !== "field" && props.playType !== 11 && props.playType !== 11.5){
             id.current = -1
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)
@@ -44,7 +47,7 @@ const Card = (props) =>{
             }, 5000)
         }
         //flip the picked up card
-        if(props.last && props.play === true && seen.current === false && props.playType !== 2){
+        if(props.last && props.play === true && seen.current === false && props.playType !== 2 && props.playType !== 11 && props.playType !== 11.5){
             seen.current = true
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)
