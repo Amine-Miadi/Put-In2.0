@@ -1,4 +1,4 @@
-import express from 'express'
+const express = require('express');
 const setup = require('./game_setup')
 const helpers = require('./room_management')
 const { Server } = require("socket.io");
