@@ -10,7 +10,6 @@ const Card = (props) =>{
     const [cardInfo, setInfo] = useState(() => props.type === "field" ? `${properties.suit}` : "" );
 
     function cardClick(){
-        console.log("flipped, idk why ",props.playType)
         if(props.type === "Player" && props.playType === 7 && props.playType !== 11 && props.playType !== 11.5){
             setclass("card Player faceup")
             setInfo(`${properties.suit}`)

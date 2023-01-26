@@ -3,6 +3,7 @@ import Button from './components/Button';
 import Form from './components/roomFrom';
 import Card from './components/Card';
 import OpCard from './components/opCard';
+import FCard from './components/fCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
 import './styles/styles.css'
@@ -16,6 +17,7 @@ function App() {
         //card components holding their class properties on parent render
   //to stop player from flipping more cards when a 7 is played
   const newState = useRef();
+  const Kswap = useRef();
   const playCode = useRef(-100);
   const swapArray = useRef([]);
   const keepTurn = useRef(false);
@@ -79,12 +81,12 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   /* play hand button handler */
   function handleclick(){
-    console.log("onclick info: ", play,playCode,keepTurn,gameState,action.current)
     setKey(cardKey +1+gameState[Players[0]].length)
     if(play === true){
       setGamestate(gameState)
       playHand()
       if(keepTurn.current === false){
+        console.log("sent last")
         setKey(cardKey +1+gameState[Players[0]].length)
         setPlay(false)
         socket.emit('play-hand', roomCode, gameState)
@@ -109,7 +111,6 @@ socket.off('win').on('win', (player,newgameState) =>{
   /*add card to hand if player clicks on it*/
   function addTohand(card){
     setHand(current => [...current, card])
-    console.log("added to hand")
   }
 
   function stopFlippage(){
@@ -139,6 +140,10 @@ socket.off('win').on('win', (player,newgameState) =>{
     }
   }
 
+  function swapKing(){
+    console.log("made it here")
+    Kswap.current = true
+  }
 
 
 //gameplay-functions
@@ -152,7 +157,7 @@ function hez(newState){
 
 function playHand(){
   setKey(cardKey +1+gameState[Players[0]].length)
-  let verdict = rules.verify(hand,gameState,Players[0])
+  let verdict = rules.verify(hand,gameState,Kswap.current)
     if(verdict === -1){
       setHand([])
     }
@@ -193,6 +198,19 @@ function playHand(){
       setGamestate(newState)
       setHand([])
     }
+    if(verdict === 15){
+      console.log(gameState)
+      playCode.current = 15
+      keepTurn.current = true
+      const newState = gameState
+      newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
+      newState[Players[0]].push(newState.Field.pop())
+      hand.map(card => newState.Field.push(card))
+      console.log(newState)
+      setGamestate(newState)
+      setHand([])
+    }
+
     if(verdict === 1){
     playCode.current = 1
     const newState = gameState
@@ -233,7 +251,7 @@ if(currentPage === 'roomJoin'){
 
         </div><br /><br />
 
-        <Card properties = {gameState.Field[gameState.Field.length - 1]} type = {"field"} key={cardKey} iD={cardKey}/><br /><br />
+        <FCard properties = {gameState.Field[gameState.Field.length - 1]} action = {swapKing}/><br /><br />
 
         <div className='cards'>{gameState[Players[0]].map((card, i) => {
                                                                 return <Card

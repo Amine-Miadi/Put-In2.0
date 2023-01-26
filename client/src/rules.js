@@ -1,4 +1,4 @@
-function verify(hand,gameState){
+function verify(hand,gameState,Kswap){
     //coding: 
     // -1 error, 
     // 1 multiple/one valid cards, 
@@ -7,8 +7,16 @@ function verify(hand,gameState){
     // 11 switch cards, 
     // 10 see opponent card
 
+    let field = gameState.Field[gameState.Field.length -1]
+    console.log(Kswap,field.value)
+    
+    if(Kswap === true && field.value === "K"){
+        if(hand.length > 1) return -1
+        console.log("got to the verification of the king and is returning 15")
+        return 15
+    }
     if(hand.length === 1){
-        if(hand[0].value === gameState.Field[gameState.Field.length -1].value){
+        if(hand[0].value === field.value){
             if(hand[0].value === 7) {return 7}
             if(hand[0].value === 10) {return 10}
             if(hand[0].value === 11) {return 11}
