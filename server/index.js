@@ -1,8 +1,10 @@
+import express from 'express'
 const setup = require('./game_setup')
 const helpers = require('./room_management')
 const { Server } = require("socket.io");
 const io = new Server(3001, {cors: {origin: "*"}});
 
+io.use(express.static('build'))
 
 io.on("connection", (socket) => {
   console.log("connected from: ",socket.id)
