@@ -1,11 +1,11 @@
-const getGameState = require('./game_setup')
+const setup = require('./game_setup')
 const rooms = []
 
 function roomJoin(socket,roomCode){
     const found = rooms.filter(room => room.code === roomCode)
     if(found.length===0){
       const room = {
-        gameState:getGameState(),
+        gameState: setup.getGameState(),
         code: roomCode,
         players: [socket.id]
       }
@@ -46,7 +46,34 @@ function exitRoom(id){
   }
 }
 
+function checkEmptyDeck(state){
+  if(state.Deck.length === 2){
+    console.log("checking length")
+    let tempState = state
+    tempState.Deck = tempState.Deck.concat(state.Field.slice(0,-1))
+    tempState.Field = state.Field.slice(-1)
+    tempState.Deck = setup.shuffle(tempState.Deck)
+    console.log("new deck: ", tempState)
+    return tempState
+  }
+  return state
+}
+
+function isWin(state){
+  if(state.Player1.length === 0 ){
+    return "Player1"
+  }
+  else if(state.Player2.length === 0 ){
+    return "Player2"
+  }
+  else{
+    return null
+  }
+}
+
 module.exports = {
   roomJoin, 
-  exitRoom
+  exitRoom,
+  isWin,
+  checkEmptyDeck
 }

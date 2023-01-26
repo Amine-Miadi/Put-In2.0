@@ -56,6 +56,7 @@ socket.off('init').on('init', details => {
 })
 
 socket.off('update').on('update', newState => {
+  console.log("here new state ",newState)
   playCode.current = 0
   action.current = addTohand
   hez(newState)
@@ -81,7 +82,7 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   /* play hand button handler */
   function handleclick(){
-    setKey(cardKey +1+gameState[Players[0]].length)
+    setKey(cardKey +8+gameState[Players[0]].length)
     if(play === true){
       setGamestate(gameState)
       playHand()
@@ -90,6 +91,7 @@ socket.off('win').on('win', (player,newgameState) =>{
         setKey(cardKey +1+gameState[Players[0]].length)
         setPlay(false)
         socket.emit('play-hand', roomCode, gameState)
+        setKey(cardKey +1+gameState[Players[0]].length)
       }
       //reset play status (can no longer keep playing)
       keepTurn.current = false

@@ -38,4 +38,4 @@ function shuffle(cards){
     return shuffled
 }
 
-module.exports = getGameState
+module.exports = {getGameState,shuffle}

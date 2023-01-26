@@ -1,4 +1,4 @@
-const getGameState = require('./game_setup')
+const setup = require('./game_setup')
 const helpers = require('./room_management')
 const { Server } = require("socket.io");
 const io = new Server(3001, {cors: {origin: "*"}});
@@ -14,13 +14,14 @@ io.on("connection", (socket) => {
 
   //sending info to room all while checking if game is won
   socket.on('play-hand', (room, gameState) => {
-    console.log("got play hand")
-    const result = isWin(gameState)
+    const result = helpers.isWin(gameState)
     if(result !==null){
       console.log(result, " won the game")
-      io.to(room).emit('win', result,getGameState())
+      io.to(room).emit('win', result,setup.getGameState())
     }
     else{
+      gameState = helpers.checkEmptyDeck(gameState)
+      console.log(gameState)
       console.log("echo sent from: ", socket.id)
       socket.to(room).emit('update', gameState)
     }
@@ -36,14 +37,3 @@ io.on("connection", (socket) => {
 });
 
 
-function isWin(state){
-  if(state.Player1.length === 0 ){
-    return "Player1"
-  }
-  else if(state.Player2.length === 0 ){
-    return "Player2"
-  }
-  else{
-    return null
-  }
-}

@@ -12,7 +12,6 @@ function verify(hand,gameState,Kswap){
     
     if(Kswap === true && field.value === "K"){
         if(hand.length > 1) return -1
-        console.log("got to the verification of the king and is returning 15")
         return 15
     }
     if(hand.length === 1){

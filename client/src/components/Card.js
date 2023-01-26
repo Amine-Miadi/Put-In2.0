@@ -8,7 +8,7 @@ const Card = (props) =>{
     const seen = useRef(false);
     const [Class, setclass] = useState(() => props.type === "field" ? "card faceup" : "card Player facedown");
     const [cardInfo, setInfo] = useState(() => props.type === "field" ? `${properties.suit}` : "" );
-
+    console.log("id: ",id.current,"  class: ",Class,"  card: ",properties.value,properties.suit)
     function cardClick(){
         if(props.type === "Player" && props.playType === 7 && props.playType !== 11 && props.playType !== 11.5){
             setclass("card Player faceup")
