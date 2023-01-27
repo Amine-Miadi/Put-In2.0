@@ -7,7 +7,9 @@ const io = require('socket.io')(server, {
 const setup = require('./game_setup')
 const helpers = require('./room_management')
 
-server.listen(3001);
+server.listen(3000,() => {
+  console.log("listening on port: 3000")
+});
 
 app.use(express.static('build'))
 
