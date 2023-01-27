@@ -1,10 +1,16 @@
 const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  cors: {origin: "*"}
+});
 const setup = require('./game_setup')
 const helpers = require('./room_management')
-const { Server } = require("socket.io");
-const io = new Server(3001, {cors: {origin: "*"}});
 
-io.use(express.static('build'))
+server.listen(3001);
+
+app.use(express.static('build'))
+
 
 io.on("connection", (socket) => {
   console.log("connected from: ",socket.id)
