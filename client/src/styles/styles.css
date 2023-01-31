@@ -95,8 +95,46 @@
   }
   
 
-  #button{
+  .button{
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 900;
+    height: 3rem;
+    width: 5rem;
+    border-width: 1px;
+    background-color: rgb(163, 228, 245);
+    margin: 0;
+    text-align: center;
+    transition: 0.2s;
+  }
+  .Player:hover{
+    transform: translateY(-1rem);
+  }
+
+  .form{
+    display:grid;
+    justify-content: center;
+    justify-items: center;
+  }
+  
+  .optionsContainer{
+    margin-left:-79px;
     position: absolute;
-    left: 100px;
-    bottom: 85%;
+    bottom: 40px;
+  }
+
+  .options{
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+    margin: 1rem;
+  }
+
+  .options:hover{
+    border: white;
+    border: 3px;
+    transform:scale(1.11);
+    background-color: black;
+    color: white;
   }

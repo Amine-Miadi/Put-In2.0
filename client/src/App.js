@@ -6,6 +6,10 @@ import OpCard from './components/opCard';
 import FCard from './components/fCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
+import {FiSettings,FiHelpCircle} from 'react-icons/fi'
+import {BsInfoCircle} from 'react-icons/bs'
+
+
 import './styles/styles.css'
 const rules = require('./rules')
 
@@ -56,7 +60,6 @@ socket.off('init').on('init', details => {
 })
 
 socket.off('update').on('update', newState => {
-  console.log("here new state ",newState)
   playCode.current = 0
   action.current = addTohand
   hez(newState)
@@ -82,16 +85,13 @@ socket.off('win').on('win', (player,newgameState) =>{
 
   /* play hand button handler */
   function handleclick(){
-    setKey(cardKey +8+gameState[Players[0]].length)
     if(play === true){
       setGamestate(gameState)
       playHand()
       if(keepTurn.current === false){
-        console.log("sent last")
-        setKey(cardKey +1+gameState[Players[0]].length)
         setPlay(false)
         socket.emit('play-hand', roomCode, gameState)
-        setKey(cardKey +1+gameState[Players[0]].length)
+        setKey(cardKey+8+gameState[Players[0]].length)
       }
       //reset play status (can no longer keep playing)
       keepTurn.current = false
@@ -143,7 +143,6 @@ socket.off('win').on('win', (player,newgameState) =>{
   }
 
   function swapKing(){
-    console.log("made it here")
     Kswap.current = true
   }
 
@@ -201,14 +200,12 @@ function playHand(){
       setHand([])
     }
     if(verdict === 15){
-      console.log(gameState)
       playCode.current = 15
       keepTurn.current = true
       const newState = gameState
       newState[Players[0]] = newState[Players[0]].filter(card => !hand.includes(card));
       newState[Players[0]].push(newState.Field.pop())
       hand.map(card => newState.Field.push(card))
-      console.log(newState)
       setGamestate(newState)
       setHand([])
     }
@@ -220,6 +217,7 @@ function playHand(){
     hand.map(card => newState.Field.push(card))
     setGamestate(newState)
     setHand([])
+    setKey(cardKey +1+gameState[Players[0]].length)
     }
     setKey(cardKey +1+gameState[Players[0]].length)
 }
@@ -236,7 +234,12 @@ if(currentPage === 'roomJoin'){
         roomCode={roomCode}
         handleSubmit={handleSubmit}
         inputChange={inputChange}
-      />
+      /><br />
+      <div className='optionsContainer'>
+        <button className='options' ><FiSettings size='40px'/></button>
+        <button className='options' ><FiHelpCircle size='40px'/></button>
+        <button className='options' ><BsInfoCircle size='40px'/></button>
+      </div>
       <Warning on={warn} />
     </div>
   );
@@ -244,7 +247,6 @@ if(currentPage === 'roomJoin'){
   else if(currentPage === 'gamePage'){
     return (
       <div className='main'>
-      {gameState.Deck.length}
       <div className='cards'>{gameState[Players[1]].map((card,i) =><OpCard
                                                                         properties={card}
                                                                         action = {action.current}
@@ -254,7 +256,6 @@ if(currentPage === 'roomJoin'){
         </div><br /><br />
 
         <FCard properties = {gameState.Field[gameState.Field.length - 1]} action = {swapKing}/><br /><br />
-
         <div className='cards'>{gameState[Players[0]].map((card, i) => {
                                                                 return <Card
                                                                             play = {play}
@@ -268,9 +269,8 @@ if(currentPage === 'roomJoin'){
                                                                         />
                                                                         })}
         </div><br /><br />
-        <br /><br /><br />
+        <br />
         <Button handleclick={handleclick} label={'play hand'}/> <br />
-        {playCode.current}
       </div>
     );
   }

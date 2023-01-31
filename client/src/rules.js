@@ -8,12 +8,12 @@ function verify(hand,gameState,Kswap){
     // 10 see opponent card
 
     let field = gameState.Field[gameState.Field.length -1]
-    console.log(Kswap,field.value)
     
     if(Kswap === true && field.value === "K"){
         if(hand.length > 1) return -1
         return 15
     }
+    
     if(hand.length === 1){
         if(hand[0].value === field.value){
             if(hand[0].value === 7) {return 7}
