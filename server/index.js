@@ -21,6 +21,10 @@ io.on("connection", (socket) => {
     console.log(socket.id, "joined room", roomCode)
     helpers.roomJoin(socket,roomCode)
   })
+  socket.on('startGame', (room) => {
+    console.log("got start")
+    io.to(room).emit('begin')
+  })
 
   //sending info to room all while checking if game is won
   socket.on('play-hand', (room, gameState) => {

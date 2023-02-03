@@ -6,11 +6,12 @@ import OpCard from './components/opCard';
 import FCard from './components/fCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
+import Dropback from './components/popups/Dropback';
+import Settings from './components/popups/Settings'
 import {FiSettings,FiHelpCircle} from 'react-icons/fi'
 import {BsInfoCircle} from 'react-icons/bs'
-
-
 import './styles/styles.css'
+
 const rules = require('./rules')
 
 
@@ -20,6 +21,8 @@ function App() {
   //-->cardKey used to set the key of cards so they are recreated on render. was added to mitigate the problem of 
         //card components holding their class properties on parent render
   //to stop player from flipping more cards when a 7 is played
+  const [buffer, setBuffer] = useState(false)
+  const [dropbackChild,setChild] = useState(null)
   const newState = useRef();
   const Kswap = useRef();
   const playCode = useRef(-100);
@@ -42,6 +45,7 @@ function App() {
 
 
 socket.off('init').on('init', details => {
+  console.log("player joined")
   if(details === -1){
     setroomCode('')
     setWarning(true)
@@ -54,7 +58,14 @@ socket.off('init').on('init', details => {
     hez(details.gameState)
     setPage('gamePage')
     if(details.players[0] === "Player1"){
-      setPlay(true)
+      setBuffer(true)
+      socket.off('begin').on('begin', () => {
+        setPlay(true)
+        setBuffer(false)
+      })
+    }
+    else if(details.players[0] === "Player2"){
+      socket.emit('startGame',roomCode)
     }
   }
 })
@@ -236,11 +247,13 @@ if(currentPage === 'roomJoin'){
         inputChange={inputChange}
       /><br />
       <div className='optionsContainer'>
-        <button className='options' ><FiSettings size='40px'/></button>
-        <button className='options' ><FiHelpCircle size='40px'/></button>
-        <button className='options' ><BsInfoCircle size='40px'/></button>
+      <button className='options' onClick={() => {setChild("settings")}}><FiSettings size='40px'/></button>
+      <button className='options' onClick={() => {setChild("help")}}><FiHelpCircle size='40px'/></button>
+      <button className='options' onClick={() => {setChild("info")}}><BsInfoCircle size='40px'/></button>
       </div>
       <Warning on={warn} />
+      {dropbackChild !== null? <Dropback child = {dropbackChild}  close={setChild}/> : ""}
+      
     </div>
   );
 }
@@ -271,6 +284,8 @@ if(currentPage === 'roomJoin'){
         </div><br /><br />
         <br />
         <Button handleclick={handleclick} label={'play hand'}/> <br />
+        {buffer === true? <Dropback child = {"awaiting player 2"} /> : ""}
+        {console.log(buffer)}
       </div>
     );
   }
