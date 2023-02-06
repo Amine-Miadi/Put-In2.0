@@ -4,14 +4,14 @@ const Form = (props) => {
     return(
         <div>
             <form className='form' onSubmit={props.handleSubmit}>
-                Room Code:
-                <br /><br /><br />
+                <div className='text'>Room Code:</div>
                 <input 
+                style={{borderRadius: '5px'}}
                 onChange={props.inputChange} 
                 value={props.roomCode}
                 placeholder = 'input the room code '
                 />
-                <br />
+                <br /><br />
                 <button className="button" type="submit"> Join <BsFillDoorOpenFill/> </button>
             </form>
         </div>

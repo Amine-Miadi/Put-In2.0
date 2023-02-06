@@ -7,7 +7,6 @@ import FCard from './components/fCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
 import Dropback from './components/popups/Dropback';
-import Settings from './components/popups/Settings'
 import {FiSettings,FiHelpCircle} from 'react-icons/fi'
 import {BsInfoCircle} from 'react-icons/bs'
 import './styles/styles.css'
@@ -45,7 +44,6 @@ function App() {
 
 
 socket.off('init').on('init', details => {
-  console.log("player joined")
   if(details === -1){
     setroomCode('')
     setWarning(true)
@@ -240,26 +238,39 @@ function playHand(){
 //render based on gamePage state, whether welcome page or game page
 if(currentPage === 'roomJoin'){
   return (
-    <div>
-      <Form 
-        roomCode={roomCode}
-        handleSubmit={handleSubmit}
-        inputChange={inputChange}
-      /><br />
-      <div className='optionsContainer'>
-      <button className='options' onClick={() => {setChild("settings")}}><FiSettings size='40px'/></button>
-      <button className='options' onClick={() => {setChild("help")}}><FiHelpCircle size='40px'/></button>
-      <button className='options' onClick={() => {setChild("info")}}><BsInfoCircle size='40px'/></button>
+    
+    <div className='welcome'>
+      <div className='float-child'>
+        <div className='content'>
+          <img alt = "" src={ require('./img/putin-image.png')} className="image" />
+        </div>
       </div>
-      <Warning on={warn} />
-      {dropbackChild !== null? <Dropback child = {dropbackChild}  close={setChild}/> : ""}
-      
+      <div className='float-child'>
+        <div className='content'>
+        <Form 
+            roomCode={roomCode}
+            handleSubmit={handleSubmit}
+            inputChange={inputChange}
+          />
+          <br />
+          <br />
+          <br />
+          <div className='optionsContainer'>
+            <button className='options' onClick={() => {setChild("settings")}}><FiSettings size='40px'/></button>
+            <button className='options' onClick={() => {setChild("help")}}><FiHelpCircle size='40px'/></button>
+            <button className='options' onClick={() => {setChild("info")}}><BsInfoCircle size='40px'/></button>
+          </div>
+            <Warning on={warn} />
+            {dropbackChild !== null? <Dropback child = {dropbackChild}  close={setChild}/> : ""}
+        </div>
+        </div>
     </div>
   );
 }
   else if(currentPage === 'gamePage'){
     return (
       <div className='main'>
+      <br /><br />
       <div className='cards'>{gameState[Players[1]].map((card,i) =><OpCard
                                                                         properties={card}
                                                                         action = {action.current}
@@ -281,10 +292,9 @@ if(currentPage === 'roomJoin'){
                                                                             last={i+1===gameState[Players[0]].length ? true : false}
                                                                         />
                                                                         })}
-        </div><br /><br />
-        <br />
+        </div><br />
         <Button handleclick={handleclick} label={'play hand'}/> <br />
-        {buffer === true? <Dropback child = {"awaiting player 2"} /> : ""}
+        {buffer === true? <Dropback child = {"awaiting player 2"} buffer = {true}/> : ""}
         {console.log(buffer)}
       </div>
     );
