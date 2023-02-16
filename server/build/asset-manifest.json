@@ -1,14 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.2309ef56.css",
-    "main.js": "/static/js/main.932a45dc.js",
+    "main.css": "/static/css/main.1b63f5ef.css",
+    "main.js": "/static/js/main.052eb0e8.js",
     "static/media/Card_Back.jpg": "/static/media/Card_Back.7308290aa36f0e35d637.jpg",
+    "static/media/title.png": "/static/media/title.1d62e8a8254795e4b13a.png",
+    "static/media/putin-image.png": "/static/media/putin-image.f6ae539aa29d6db28a32.png",
     "index.html": "/index.html",
-    "main.2309ef56.css.map": "/static/css/main.2309ef56.css.map",
-    "main.932a45dc.js.map": "/static/js/main.932a45dc.js.map"
+    "main.1b63f5ef.css.map": "/static/css/main.1b63f5ef.css.map",
+    "main.052eb0e8.js.map": "/static/js/main.052eb0e8.js.map"
   },
   "entrypoints": [
-    "static/css/main.2309ef56.css",
-    "static/js/main.932a45dc.js"
+    "static/css/main.1b63f5ef.css",
+    "static/js/main.052eb0e8.js"
   ]
 }

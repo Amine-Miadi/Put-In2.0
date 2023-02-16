@@ -170,9 +170,37 @@
     border-color: blue 10px;
   }
 
-  
+
 
   .image{
     transform: rotate(-10deg);
     height: 300px;
+    width: 100%;
+  }
+
+  .title{
+    height: 220px;
+    width : 100%;
+  }
+
+  .closeButton{
+    position: absolute;
+    background-color: rgb(234, 235, 228);
+    color: rgb(129, 18, 18);
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    margin: .5rem;
+    font-size: 3rem;
+    top: 20px;
+    right: 20px;
+  }
+
+
+  .popupBody{
+    background-color: antiquewhite;
+    color: black;
+    width: 100%;
+    border-radius: 10%;
+    padding: 10%;
   }

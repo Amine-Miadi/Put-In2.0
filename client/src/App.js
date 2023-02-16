@@ -7,6 +7,9 @@ import FCard from './components/fCard';
 import Warning from './components/fullroomWarning'
 import socket from './socket'
 import Dropback from './components/popups/Dropback';
+import Settings from './components/popups/Settings';
+import Help from './components/popups/Help';
+import Info from './components/popups/Info';
 import {FiSettings,FiHelpCircle} from 'react-icons/fi'
 import {BsInfoCircle} from 'react-icons/bs'
 import './styles/styles.css'
@@ -238,13 +241,17 @@ function playHand(){
 //render based on gamePage state, whether welcome page or game page
 if(currentPage === 'roomJoin'){
   return (
-    
     <div className='welcome'>
       <div className='float-child'>
         <div className='content'>
           <img alt = "" src={ require('./img/putin-image.png')} className="image" />
         </div>
       </div>
+
+      <div className='float-child'>
+        <img alt = "" src={ require('./img/title.png')} className="title"/>
+      </div>
+
       <div className='float-child'>
         <div className='content'>
         <Form 
@@ -256,9 +263,9 @@ if(currentPage === 'roomJoin'){
           <br />
           <br />
           <div className='optionsContainer'>
-            <button className='options' onClick={() => {setChild("settings")}}><FiSettings size='40px'/></button>
-            <button className='options' onClick={() => {setChild("help")}}><FiHelpCircle size='40px'/></button>
-            <button className='options' onClick={() => {setChild("info")}}><BsInfoCircle size='40px'/></button>
+            <button className='options' onClick={() => {setChild(<Settings/>)}}><FiSettings size='40px'/></button>
+            <button className='options' onClick={() => {setChild(<Help/>)}}><FiHelpCircle size='40px'/></button>
+            <button className='options' onClick={() => {setChild(<Info/>)}}><BsInfoCircle size='40px'/></button>
           </div>
             <Warning on={warn} />
             {dropbackChild !== null? <Dropback child = {dropbackChild}  close={setChild}/> : ""}
